@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,7 +34,7 @@ func set_alert(writer http.ResponseWriter, request *http.Request) {
 
 	if request.Method == http.MethodPost {
 		request.ParseForm()
-		alert_body_data, _ = io.ReadAll(request.Body)
+		alert_body_data, _ = ioutil.ReadAll(request.Body)
 	}
 
 	alert_post_values := request.Form
