@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+ocp_alert_webhook_tester
 
 # Test binary, built with `go test -c`
 *.test
