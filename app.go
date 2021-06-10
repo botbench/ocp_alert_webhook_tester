@@ -29,6 +29,10 @@ const service_port string = "8080"
 func set_alert(writer http.ResponseWriter, request *http.Request) {
 	// This gets a map of keys and values
 	alert_all_values := request.URL.Query()
+
+	if request.Method == http.MethodPost {
+		request.ParseForm()
+	}
 	alert_post_values := request.Form
 
 	if alert_all_values == nil {
