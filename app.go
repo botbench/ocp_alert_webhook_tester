@@ -29,11 +29,25 @@ const service_port string = "8080"
 func set_alert(writer http.ResponseWriter, request *http.Request) {
 	// This gets a map of keys and values
 	alert_all_values := request.URL.Query()
+	alert_post_values := request.Form
 
-	// Push a string version of the map to the queue with a timestamp
-	if alert_all_values != nil {
+	if alert_all_values == nil {
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET EMPTY"})
+	} else {
 		alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_all_values)})
 	}
+
+	if alert_post_values == nil {
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST EMPTY"})
+	} else {
+		alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_post_values)})
+	}
+
+	// // Push a string version of the map to the queue with a timestamp
+	// if alert_all_values != nil {
+	// alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_all_values)})
+	// alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_post_values)})
+	// }
 }
 
 // Send the queued alerts to the client
