@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -29,29 +30,32 @@ const service_port string = "8080"
 func set_alert(writer http.ResponseWriter, request *http.Request) {
 	// This gets a map of keys and values
 	alert_all_values := request.URL.Query()
+	var alert_body_data []byte = nil
 
 	if request.Method == http.MethodPost {
 		request.ParseForm()
+		alert_body_data, _ = io.ReadAll(request.Body)
 	}
+
 	alert_post_values := request.Form
 
 	if alert_all_values == nil {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET EMPTY"})
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET: EMPTY"})
 	} else {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_all_values)})
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET: " + fmt.Sprint(alert_all_values)})
 	}
 
 	if alert_post_values == nil {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST EMPTY"})
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST: EMPTY"})
 	} else {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_post_values)})
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST: " + fmt.Sprint(alert_post_values)})
 	}
 
-	// // Push a string version of the map to the queue with a timestamp
-	// if alert_all_values != nil {
-	// alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_all_values)})
-	// alert_queue.Push(&alert_entry{time.Now().Unix(), fmt.Sprint(alert_post_values)})
-	// }
+	if alert_body_data == nil {
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "BODY: EMPTY"})
+	} else {
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "BODY:\n" + string(alert_body_data[:])})
+	}
 }
 
 // Send the queued alerts to the client
