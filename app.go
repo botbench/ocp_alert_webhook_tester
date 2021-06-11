@@ -29,7 +29,7 @@ const service_port string = "8080"
 // Store an alert in the queue
 func set_alert(writer http.ResponseWriter, request *http.Request) {
 	// This gets a map of keys and values
-	alert_all_values := request.URL.Query()
+	alert_get_values := request.URL.Query()
 	var alert_body_data []byte = nil
 
 	if request.Method == http.MethodPost {
@@ -37,18 +37,10 @@ func set_alert(writer http.ResponseWriter, request *http.Request) {
 		alert_body_data, _ = ioutil.ReadAll(request.Body)
 	}
 
-	alert_post_values := request.Form
-
-	if alert_all_values == nil {
+	if alert_get_values == nil {
 		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET: EMPTY"})
 	} else {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET: " + fmt.Sprint(alert_all_values)})
-	}
-
-	if alert_post_values == nil {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST: EMPTY"})
-	} else {
-		alert_queue.Push(&alert_entry{time.Now().Unix(), "POST: " + fmt.Sprint(alert_post_values)})
+		alert_queue.Push(&alert_entry{time.Now().Unix(), "GET: " + fmt.Sprint(alert_get_values)})
 	}
 
 	if alert_body_data == nil {
